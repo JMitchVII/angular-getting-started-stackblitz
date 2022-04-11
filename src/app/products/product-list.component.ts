@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Console } from 'console';
 import { IProduct } from './product';
+import { ProductService } from './product.service';
 
 @Component({
   selector: 'pm-products',
@@ -8,22 +9,15 @@ import { IProduct } from './product';
   styleUrls: ['./product-list.component.css'],
 })
 export class ProductListComponent implements OnInit {
+  //
+  constructor(private productService: ProductService) {}
+
   pageTitle: string = 'Product List';
   imageWidth: number = 50;
   imageMargin: number = 2;
   showImage: boolean = false;
   private _listFilter: string = '';
-  products: IProduct[] = [
-    {
-      productName: 'Garden Cart',
-      productCode: 'GDN-023',
-      releaseDate: 'March 18 2021',
-      description: '15 gallon capacity rolling cart.',
-      price: 32.99,
-      starRating: 4.2,
-      imageUrl: 'assets/images/hammer.png',
-    },
-  ];
+  products: IProduct[] = [];
   filteredProducts: IProduct[] = this.products;
 
   get listFilter() {
@@ -48,7 +42,8 @@ export class ProductListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this._listFilter = 'cart';
+    this.products = this.productService.getProducts();
+    this.filteredProducts = this.products;
   }
 
   displayRating(message: string) {
