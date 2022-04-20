@@ -1,12 +1,23 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { Observable } from "rxjs";
+import { tap , catchError } from "rxjs/operators";
 import { IProduct } from "./product";
 
 @Injectable({providedIn : 'root'})
 export class ProductService {
   constructor(private http : HttpClient) {};
 
-  getProducts() : IProduct[] {
+  private serviceUrl : string = "api/products/products.json"
+
+  getProducts() : Observable<IProduct[]> {
+    return this.http.get<IProduct[]>(this.serviceUrl).pipe(tap( data => console.log('All', JSON.stringify(data))));
+    // Catch error has been omitted from this method since I don't have
+    // a good implementation for it 
+  }
+
+
+  /*getProducts() : IProduct[] {
     return [
       {
         "productName": "Leaf Rake",
@@ -54,6 +65,7 @@ export class ProductService {
         "imageUrl": "assets/images/xbox-controller.png"
       }
     ]
-  }
+    
+  }*/
 
 }

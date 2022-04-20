@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Console } from 'console';
+import { Subscription } from 'rxjs';
 import { IProduct } from './product';
 import { ProductService } from './product.service';
 
@@ -8,7 +9,7 @@ import { ProductService } from './product.service';
   templateUrl: './product-list.component.html',
   styleUrls: ['./product-list.component.css'],
 })
-export class ProductListComponent implements OnInit {
+export class ProductListComponent implements OnInit, OnDestroy {
   //
   constructor(private productService: ProductService) {}
 
@@ -19,6 +20,7 @@ export class ProductListComponent implements OnInit {
   private _listFilter: string = '';
   products: IProduct[] = [];
   filteredProducts: IProduct[] = this.products;
+  private _productServiceSub!: Subscription;
 
   get listFilter() {
     return this._listFilter;
@@ -42,11 +44,20 @@ export class ProductListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.products = this.productService.getProducts();
-    this.filteredProducts = this.products;
+    this._productServiceSub = this.productService.getProducts().subscribe({
+      next: (data) => {
+        this.products = data;
+        this.filteredProducts = this.products;
+      },
+      error: (error) => console.log(error),
+    });
   }
 
   displayRating(message: string) {
     this.pageTitle = this.pageTitle + message;
+  }
+
+  ngOnDestroy() {
+    this._productServiceSub.unsubscribe();
   }
 }
